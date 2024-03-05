@@ -9,6 +9,8 @@ import math
 from glob import glob
 from tqdm import tqdm
 import cmlreaders as cml
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # class to determine beep times from audio files
 class beep_detector:
@@ -87,11 +89,11 @@ class beep_detector:
         anns.sort()
         
         if len(wavs) == 0 or len(anns) == 0:
-            with open('errors.txt', 'a') as f:
+            with open('output_dir/errors.txt', 'a') as f:
                 f.write(f'{self.subject}, {self.experiment}, {self.session}: Unable to locate wav or ann files.\n')
             raise RuntimeError("Unable to locate wav or ann files.")
         elif len(wavs) != len(anns):
-            with open('errors.txt', 'a') as f:
+            with open('output_dir/errors.txt', 'a') as f:
                 f.write(f'{self.subject}, {self.experiment}, {self.session}: Different number of wav and ann files.\n')
             
         return wavs, anns
@@ -157,7 +159,7 @@ class beep_detector:
     
     
     # calculate approximate duration of beep in seconds into audio file
-    def calculate_beep_time(self, wav_file, ann_file, trial, start=0.1, vr_toggle=False):
+    def calculate_beep_time(self, wav_file, ann_file, start=0.1, vr_toggle=False):
         samplerate, data = self.load_wav_file(wav_file)
         ms, idx, recall = self.parse_ann_file(ann_file)
         if ms < 1000:                                          # first recall within 1 second
@@ -193,10 +195,10 @@ class beep_detector:
             if behdir + trial + '.ann' in anns:
                 ann_file = behdir + trial + '.ann'
                 try:
-                    bt, vr_toggle = self.calculate_beep_time(wav_file, ann_file, trial)
-                    tups.append((self.subject, self.subject_alias, self.experiment, self.original_experiment, self.session, self.original_session, trial, bt, vr_toggle))
+                    bt, vr_toggle = self.calculate_beep_time(wav_file, ann_file)
+                    tups.append((self.subject, self.subject_alias, self.experiment, self.original_experiment, self.session, self.original_session, int(trial), round(bt, 4), vr_toggle))
                 except BaseException as e:
-                    with open('errors.txt', 'a') as f:
+                    with open('output_dir/errors.txt', 'a') as f:
                         f.write(f'{self.subject}, {self.experiment}, {self.session}, {trial}: {e}\n')
                     continue
                 
@@ -223,16 +225,14 @@ def deal_with_changes(row, exp_change, sess_change):
 
 
 # get all sessions between subjects s1 and s2 (inclusive)
-def select_subject_range(s1, s2):
-    
+# changed to running over all R1 sessions
+def select_subject_range():
     df = cml.get_data_index('r1')
     mask = []
     for idx, row in tqdm(df.iterrows()):
         if row.subject.startswith('R1'):
-            # increase to R1528E
-            #if (row.subject >= 'R1373T' and row.subject < 'R1525J') or row.subject == 'R1347D' or row.subject == 'R1367D' or (row.subject == 'R1366J' and row.experiment == 'catFR1'):
-            if (row.subject >= s1 and row.subject <= s2) or row.subject == 'R1347D' or row.subject == 'R1367D' or (row.subject == 'R1366J' and row.experiment == 'catFR1'):
-                mask.append(idx)
+            #if (row.subject >= s1 and row.subject <= s2) or row.subject == 'R1347D' or row.subject == 'R1367D' or (row.subject == 'R1366J' and row.experiment == 'catFR1'):
+            mask.append(idx)
 
     check_df = df.iloc[mask]
     return check_df
@@ -270,60 +270,77 @@ def unity_or_py(check_df):
             behdir = f'/data10/RAM/subjects/{row.subject_alias}/behavioral/{exp_match}/session_{sess_match}/'
 
         slog = glob(behdir + 'session.log')
-        sjson = glob(behdir + 'session.json*')
+        sjson = glob(behdir + 'session.json')
+        sjsonl = glob(behdir + 'session.jsonl')
 
-        info.append((row.subject, row.subject_alias, row.experiment, row.original_experiment, row.session, row.original_session, len(slog), len(sjson)))
+        info.append((row.subject, row.subject_alias, row.experiment, row.original_experiment, row.session, row.original_session, len(slog), len(sjson), len(sjsonl)))
 
-    info = pd.DataFrame(info, columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'session_log', 'session_json'])
+    info = pd.DataFrame(info, columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'session_log', 'session_json', 'session_jsonl'])
     return info
     
     
 # ---------- Running Algorithm ----------
-    
+
 # run beep detection algorithm over all unityEPL sessions
 def run_beep_detector(py_unity_info):
-    all_results = pd.DataFrame(columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'trial', 'beep_time'])
+    all_results = pd.DataFrame(columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'trial', 'beep_time', 'vr_s1', 'session_log', 'session_json', 'session_jsonl'])
     for _, row in tqdm(py_unity_info.iterrows()):
-        if row.session_json > 0:
+        if row.session_log > 0 or row.session_json > 0 or row.session_jsonl > 0:
             try:
                 bd = beep_detector(row.subject, row.subject_alias, row.experiment, row.original_experiment, row.session, row.original_session)
                 wavs, anns = bd.locate_wav_ann_files()
                 res = bd.run_trials(wavs, anns)
+                res['session_log'] = bool(row.session_log); res['session_json'] = bool(row.session_json); res['session_jsonl'] = bool(row.session_jsonl)
                 all_results = pd.concat([all_results, res])
             except BaseException as e:
                 continue
                 
-    all_results = all_results.fillna('X')      # NaN values cause problems for groupby
+    all_results['original_experiment'] = all_results['original_experiment'].fillna('X')      # NaN values cause problems for groupby
+    all_results['original_session'] = all_results['original_session'].fillna(-999).astype(int)
     return all_results
 
 # collapse across trials and calculate median beep time
 def avg_trials(all_results):
     final_res = []
-    for (sub, sub_al, exp, orig_exp, sess, orig_sess), dat in all_results.groupby(by=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session']):
+    for (sub, sub_al, exp, orig_exp, sess, orig_sess, slog, sjson, sjsonl), dat in all_results.groupby(by=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'session_log', 'session_json', 'session_jsonl']):
         ##use_rows = dat[dat['vr_s1'] == False]
-        final_res.append((sub, sub_al, exp, orig_exp, sess, orig_sess, np.median(dat['beep_time'])))
+        final_res.append((sub, sub_al, exp, orig_exp, sess, orig_sess, slog, sjson, sjsonl, np.median(dat['beep_time'])))
 
-    final_res = pd.DataFrame(final_res, columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'median_beep_time'])
+    final_res = pd.DataFrame(final_res, columns=['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'session_log', 'session_json', 'session_jsonl', 'median_beep_time'])
+    # add column with log type
+    final_res['log_type'] = ['log' if row.session_log else 'json' if row.session_json else 'jsonl' if row.session_jsonl else 'none' for _, row in final_res.iterrows()]
     return final_res
 
+# run and save csvs
+def run_and_save():
+    # save out data index of dubious subjects' sessions
+    subj_range_check = select_subject_range()
+    subj_range_check.to_csv('subj_range_check.csv', index=False)
 
-# save out data index of dubious subjects' sessions
-check_df = select_subject_range('R1373T', 'R1525J')
-check_df.to_csv('subj_range_check.csv', index=False)
+    # save out data frame with session log, session json information
+    py_unity_info = unity_or_py(subj_range_check)
+    py_unity_info.to_csv('py_unity_info.csv', index=False)
 
-# save out data frame with session log, session json information
-info = unity_or_py(check_df)
-info.to_csv('py_unity_info.csv', index=False)
+    # results for every trial --> also writes to errors.txt
+    all_results = run_beep_detector(py_unity_info)
+    all_results.to_csv('all_results.csv', index=False)
 
+    # median beep time for each session
+    final_res = avg_trials(all_results)
+    final_res.to_csv('final_res.csv', index=False)
 
-# load in dataframes from `eegoffset_workspace.ipynb`
-subj_range_check = pd.read_csv('subj_range_check.csv')
-py_unity_info = pd.read_csv('py_unity_info.csv')
+# ---------- Plotting ----------
 
-# results for every trial --> also writes to errors.txt
-all_results = run_beep_detector(py_unity_info)
-all_results.to_csv('all_results.csv', index=False)
-
-# median beep time for each session
-final_res = avg_trials(all_results)
-final_res.to_csv('final_res.csv', index=False)
+# plot all sessions on data index
+def plot_beep_times_all(final_res):
+    ax = sns.relplot(data=final_res, x='subject', y='median_beep_time', hue='log_type', height=6, aspect=3.5)
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.set(ylabel='median beep time (s)', xticks=np.arange(0, len(final_res.subject.unique()), 3))
+    plt.show()
+    
+# plot only unityEPL-FR sessions
+def plot_beep_times_unity(final_res):
+    ax = sns.relplot(data=final_res[final_res['session_json'] == True], x='subject', y='median_beep_time', hue='median_beep_time', height=6, aspect=1.4)
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.set(ylabel='median beep time (s)', xticks=np.arange(0, len(final_res[final_res['session_json']==True].subject.unique()), 3))
+    plt.show()

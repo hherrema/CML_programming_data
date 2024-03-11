@@ -195,7 +195,7 @@ def plot_offset_sessions(durations):
     
     # median beep time as a function of experiment version
     sns.stripplot(data=durations, x='experiment_version', y='median_beep_time', hue='median_beep_time', ax=ax1, legend=None)
-    ax1.set(ylabel='median beep time (ms)')
+    ax1.set(ylabel='median beep time (s)')
     ax1.spines[['right', 'top']].set_visible(False)
     
     # expected offset as a function of experiment version
@@ -206,7 +206,7 @@ def plot_offset_sessions(durations):
     # median beep time as a function of subject (chronology) and beep duration
     sns.scatterplot(data=durations, x='subject', y='median_beep_time', palette='cool', hue='beep_duration', ax=ax3)
     ax3.tick_params(axis='x', labelrotation=90)
-    ax3.set(ylabel='fixation (ms)', xticks=np.arange(0, len(durations.subject.unique()), 3))
+    ax3.set(ylabel='median beep time (s)', xticks=np.arange(0, len(durations.subject.unique()), 3))
     ax3.spines[['right', 'top']].set_visible(False)
     
     plt.suptitle('Which Sessions Require Offset Correction?')
@@ -233,7 +233,7 @@ def plot_partial_offsets(durations):
 
     # median beep time as a function of fixation and beep duration for sessions with non-zero median beep time
     sns.scatterplot(data=partial, x='fixation', y='median_beep_time', hue='beep_duration', palette='RdPu_r', ax=ax2)
-    ax2.set(xlabel='fixation (ms)', ylabel='median beep time (ms)')
+    ax2.set(xlabel='fixation (ms)', ylabel='median beep time (s)')
     ax2.spines[['right', 'top']].set_visible(False)
 
     # expected offset as a function of median beep time

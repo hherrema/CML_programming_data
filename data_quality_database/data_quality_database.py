@@ -63,6 +63,49 @@ class data_quality_database:
     def report_structure(self):
         return dict(zip(self.FIELDS, self.TYPES))
     
+    # build report in correct structure
+    def build_report(self, subject, subject_alias, experiment, orignal_experiment, session,
+                     original_session, localization, montage, on_cmlreaders, category, notes):
+        rs = self.report_structure()
+
+        # subject
+        if type(subject) == str:
+            rs['subject'] = subject
+        else:
+            raise TypeError("'subject' must have type str")
+        
+        # subject_alias
+        if type(subject_alias) == str:
+            rs['subject_alias'] = subject_alias
+        else:
+            raise TypeError("'subject_alias' must have type str")
+        
+        # experiment
+        if type(experiment) == str:
+            rs['experiment'] = experiment
+        else:
+            raise TypeError("'experiment' must have type str")
+        
+        # original experiment
+
+        # session
+        if type(session) == int:
+            rs['session'] = session
+        else:
+            raise TypeError("'session' must have type int")
+        
+        # original session
+
+        # localization
+        
+    # type checks
+    def _type_check_report_build(self, rs, key, val, typ):
+        if type(val) == typ:
+            rs[key] = val
+            return rs
+        else:
+            raise TypeError(f"{key} must have type {typ}")
+    
     # report issue
     def report(self, kwargs, force=False):
         valid_kwargs = self._validate_kwargs(kwargs)
@@ -91,7 +134,6 @@ class data_quality_database:
                               f"{valid_kwargs['experiment']}, {valid_kwargs['session']}")
                 row = self._update_database(valid_kwargs)
                 return row
-            
 
     # validate structure of keyword arguments
     def _validate_kwargs(self, kwargs):
@@ -119,7 +161,6 @@ class data_quality_database:
         
         return cleaned_kwargs
 
-    
     # update database
     def _update_database(self, valid_kwargs):
         records = self.all_records()

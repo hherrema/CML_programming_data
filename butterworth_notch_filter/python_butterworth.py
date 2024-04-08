@@ -6,6 +6,7 @@
 # imports
 import numpy as np
 from scipy import linalg
+import ctypes
 
 def define_args(freq_range, sample_rate):
     """
@@ -668,7 +669,9 @@ def _validate_x(x):
     return x
             
 def _linear_filter(b, a, x, axis, zi):
-    raise NotImplementedError("Scipy implements in c++")
+    scipy_signal__sigtools_linear_filter_module_init()
+    scipy_signal__sigtools_linear_filter()
+    #raise NotImplementedError("Scipy implements in c++")
 
 filter_dict = {'butter': [buttap],
                'butterworth': [buttap],
@@ -679,3 +682,404 @@ band_dict = {'bs': 'bandstop',
              'bands': 'bandstop',
              'stop': 'bandstop',
              }
+
+# ---------- scipy.signal linear_filter (C) ----------
+
+def scipy_signal__sigtools_linear_filter_module_init():
+    BasicFilterFunctions = {}
+    for k in range(256):
+        BasicFilterFunctions[k] = None
+    
+    # only need float and double
+    BasicFilterFunctions[np.float] = FLOAT_filt
+    BasicFilterFunctions[np.double] = DOUBLE_filt
+
+def scipy_signal__sigtools_linear_filter():
+    def fail(ara, arb, arX, arVi, arVf, arY):
+        del ara
+        del arb
+        del arX
+        del arVi
+        del arVf
+        del arY
+        return None
+    # b, a, X, Vi
+    # arY, arb, ara, arX, arVi, arVf
+    # axis, typenum, theaxis, st, Vi_needs_broadcasted = 0
+    # ara_ptr, input_flag = 0, azero
+    # na, nb, nal, zi_size
+    # zf_shape
+    # basic_filter
+    
+    axis = -1
+    Vi = None
+    
+    # translated by chatgpt
+    typenum = np.array(b, dtype=int).dtype
+    typenum = np.array(a, dtype=typenum).dtype
+    typenum = np.array(X, dtype=typenum).dtype
+    if Vi != None:
+        typenum = np.array(Vi, typenum).dtype
+        
+    arY = arVf = arVi = None
+    
+    # translated by chatgpt
+    ara = np.ascontiguousarray(a, dtype=typenum)
+    arb = np.ascontguousarray(b, dtype=typenum)
+    arX = np.array(X, dtype=typenum, copy=False, order='K')
+    
+    if ara == None or arb == None or arX == None:
+        fail(ara, arb, arX, arVi, arVf, arY)
+        raise ValueError("Could not convert b, a, and x to a common type")
+        
+    if axis < -arX.ndim or axis > axX.ndim - 1:
+        fail(ara, arb, arX, arVi, arVf, arY)
+        raise ValueError("Selected axis is out of range")
+        
+    if axis < 0:
+        theaxis = arX.ndim + axis
+    else:
+        theaxis = axis
+        
+    if Vi != None:
+        # translated by chatgpt
+        ndim_arX = np.ndim(arX)
+        arVi = np.array(Vi, dtype=typenum, copy=False, ndmin=ndim_arX)
+        
+        if arVi == None:
+            fail(ara, arb, arX, arVi, arVf, arY)
+            
+        input_flag = 1
+        
+    # translated by chatgpt
+    arX_dtype = arX.dtype
+    if arX_dtype < np.dtype('uint8'):
+        basic_filter = BasicFilterFunctions[arX.dtype.type]
+    else:
+        basic_filter = None
+        
+    if basic_filter == None:
+        fail(ara, arb, arX, arVi, arVf, arY)
+        
+    # skip over leading zeros in vector representing denominator (a)
+    azero = np.zeros_like(ara)
+    if azero == None:
+        fail(ara, arb, arX, arVi, arVf, arY)
+        
+    # translated by chatgpt
+    ara_ptr = ara.ctypes.data
+    nal = ara.itemsize
+    st = ctypes.memcmp(ara_ptr, azero.data, nal)
+    azero = None
+    if st == 0:
+        fail(ara, arb, arX, arVi, arVf, arY)
+        raise ValueError("filter coefficient a[0] == 0 not supported")
+        
+    na = ara.size
+    nb = arb.size
+    # translated by chatgpt
+    zi_size = max(na, nb) - 1
+    
+    if input_flag:
+        # npy_intp k, Vik, Xk
+        for k in range(arX.ndim):
+            # translated by chatgpt
+            Vik = arVi.shape[k]
+            Xk = arX.shape[k]
+            if k == theaxis and Vik == zi_size:
+                zf_shape[k] = zi_size
+            elif k != theaxis and Vik == Xk:
+                zf_shape[k] = Xk
+            elif k != theaxis and Vik == 1:
+                zf_shape[k] = Xk
+                Vi_needs_broadcasted = 1
+            else:
+                fail(ara, arb, arX, arVi, arVf, arY)
+                
+        if Vi_needs_broadcasted:
+            # arVi_view
+            # view_dtype
+            # translated by chatgpt
+            arVi_shape = arVI.shape
+            arVi_strides = arVi.strides
+            ndim = arVi.ndim
+            strides = np.empty(ndim)
+            # strides
+            # k
+            
+            for k in range(ndim):
+                if arVi.shape[k] == 1:
+                    strides[k] = 0
+                else:
+                    strides[k] = arVi_strides[k]
+                    
+            # translated by chatgpt
+            view_dtype = arVi.dtype
+            
+            # translated by chatgpt
+            arVi_view = np.ndarray((0,), dtype=view_dtype, buffer=arVi, strides=strides, offset=0)
+            if not arVi_view:
+                fail(ara, arb, arX, arVi, arVf, arY)
+                
+            if np.base_repr(arVi_view, arVi) == -1:
+                arVi_view = None
+                fail(ara, arb, arX, arVi, arVf, arY)
+            
+            arVi = arVi_view
+        
+        # translated by chatgpt
+        arVf = np.zeros(zf_shape, dtype=typenum)
+        
+        if not arVF:
+            fail(ara, arb, arX, arVi, arVf, arY)
+            
+        # translated by chatgpt
+        arY = np.zeros(arX.shape, dtype=typenum)
+        
+        if not arY:
+            fail(ara, arb, arX, arVi, arVf, arY)
+            
+        st = RawFilter(arb, ara, arX, arVi, arVf, arY, theaxis, basic_filter)
+        if st:
+            fail(ara, arb, arX, arVi, arVf, arY)
+            
+        # translated by chatgpt
+        del ara
+        del arb
+        del arX
+        del arVi
+        
+        if not input_flag:
+            return arY
+        else:
+            # translated by chatgpt
+            result_tuple = (arY, arVf)
+            return result_tuple
+
+def RawFilter(b, a, x, zi, zf, y, axis, filter_func):
+    def clean_itx():
+        del itx
+        
+    def clean_ity():
+        del ity
+        
+    def clean_itzi(zi, itzi):
+        if zi:
+            del itzi
+            
+    def clean_itzf(zf, itzf):
+        if zi:
+            del itzi
+            
+    def clean_azfilled():
+        azfilled = None
+        
+    def clean_bzfilled():
+        bzfilled = None
+        
+    def clean_zfzfilled():
+        zfzfilled = None
+        
+    def fail():
+        return -1
+    
+    # itx, itx
+    itzi = None
+    itzf = None
+    # nitx, i, nxl, nzfl, j
+    # na, nb, nal, nbl
+    # nfilt
+    # azfilled, bzfilled, zfzfilled, yoyo
+    # translated by chatgpt
+    copyswap = x.dtype.descr.f.copyswap
+    itx = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'], op_axes=[axis])
+    
+    if not itx:
+        fail()
+        raise RuntimeError("Could not create itx")
+        
+    # translated by chatgpt
+    nitx = itx.size
+    
+    # translated by chatgpt
+    ity = np.nditer(y, flags=['multi_index'], op_flags=['readwrite'], op_axes=[axis])
+    
+    if not ity:
+        clean_itx()
+        raise RuntimeError("Could not create ity")
+    
+    if zi:
+        # translated by chatgpt
+        itzi = np.nditer(zi, flags=['multi_index'], op_flags=['readwrite'], op_axes=[axis])
+        if not itzi:
+            clean_ity()
+            raise RuntimeError("Could not create itzi")
+            
+        # translated by chatgpt
+        itzf = np.nditer(zf, flags=['multi_index'], op_flags=['readwrite'], op_axes=[axis])
+        
+        if not itzf:
+            clean_itzi(zi, itzi)
+            raise RuntimeError("Could not create itzf")
+       
+    # translated by chatgpt
+    na = np.size(a)
+    nal = a.itemsize
+    nb = np.size(b)
+    nbl = b.itemsize
+    
+    # translated by chatgpt
+    nfilt = max(na, nb)
+    
+    # translated by chatgpt
+    azfilled = np.empty(nal * nfilt)
+    if not azfilled:
+        clean_itzf(zf, itzf)
+        raise RuntimeError("Could not create azfilled")
+        
+    bzfilled = np.empty(nbl * nfilt)
+    if not bzfilled:
+        clean_azfilled()
+        raise RuntimeError("Could not create bzfilled")
+        
+    nxl = x.itemsize
+    zfzfilled = np.empty(nxl * (nfilt - 1))
+    if not zfzfilled:
+        clean_bzfilled()
+        raise RuntimeError("Could not create zfzfilled")
+        
+    # translated by chatgpt
+    azfilled[:] = 0
+    bzfilled[:] = 0
+    zfzfilled[:nxl * (nfilt - 1)] = 0
+    
+    if zfill(a, na, azfilled, nfilt) == -1:
+        clean_zfzfilled()
+    if zfill(b, nb, bzfilled, nfilt) == -1:
+        clean_zfzfilled()
+        
+    if zf:
+        nzfl = zf.itemsize
+    else:
+        nzfl = 0
+        
+    # iterate over input array
+    for i in range(nitx):
+        if zi:
+            # translated by chatgpt
+            yoyo = itzi.dataptr
+            
+            # copy initial conditions zi in zfzfilled buffer
+            for j in range(nfilt - 1):
+                # translated by chatgpt
+                np.copyto(zfzfilled[j * nzfl:], yoyo)
+                yoyo += itzi.strides[axis]
+                
+            # translated by chatgpt
+            next(itzi)
+        else:
+            if zfill(x, 0, zfzfilled, nfilt - 1) == -1:
+                clean_zfzfilled()
+                
+        try:
+            filter_func(bzfilled, azfilled, its.dataptr, ity.dataptr, nfilt, x.shape[axis], 
+                        itz.strides[axis], ity.strides[axis])
+        except BaseException:
+            clean_zfzfilled()
+            
+        next(itx)
+        next(ity)
+        
+        # copy tmp buffer of final values back into zf output array
+        if zi:
+            yoyo = itzf.dataptr
+            for j in range(nfilt - 1):
+                # translated by chatgpt
+                np.copyto(yoyo, zfzfilled[l * nzfl:])
+                yoy += itzf.strides[axis]
+                
+            next(itzf)
+            
+    # free up allocated memory
+    zfzfilled = None
+    bzfilled = None
+    azfilled = None
+    
+    if zi:
+        del itzf
+        del itzi
+    
+    del itz
+    del itx
+    
+    return 0
+    
+    
+def zfill(x, nx, xzfilled, nxzfilled):
+    # xzero
+    # i, nxl
+    # translated by chatgpt
+    copyswap = x.dtype.descr.f.copyswap
+    
+    nxl = x.itemsize
+    
+    xzero = np.zeros_like(x)
+    if not xzero:
+        return -1
+    
+    if nx > 0:
+        for i in range(nx):
+            # translated by chatgpt
+            np.copyto(xzfilled[i * nxl:], x.data[i * nxl:])
+    
+    # translated by chatgpt
+    for i in range(nx, nxzfilled):
+        np.copyto(xzfilled[i * nxl:], xzero)
+        
+    xzero = None
+    
+    return 0
+    
+# could be either DOUBLE_filt or FLOAT_filt
+def filter_func(b, a, x, y, z, len_b, len_x, stride_X, stride_Y):
+    ptr_x = x
+    ptr_y = y
+    # ptr_Z
+    ptr_b = b
+    ptr_a = a
+    # xn, yn
+    a0 = a
+    # n
+    # k
+    
+    # normalize the filter coefficients only once
+    for n in range(len_b):
+        ptr_b[n] /= a0
+        ptr_a[n] /= a0
+        
+    for k in range(len_x):
+        ptr_b = b
+        ptr_a = a
+        xn = ptr_x
+        yn = ptr_y
+        if len_b > 1:
+            ptr_Z = Z
+            yn = ptr_z + ptr_b * xn   # calculate first delay (output)
+            ptr_b += 1
+            ptr_a += 1
+            
+            # fill in middle delays
+            for n in range(len_b - 2):
+                ptr_Z = ptr_Z[1] + xn * ptr_b - yn * ptr_a
+                ptr_b += 1
+                ptr_a += 1
+                ptr_Z += 1
+                
+            # calculate last delay
+            ptr_Z = xn * ptr_b - yn * ptr_a
+        else:
+            yn = xn * ptr_b
+            
+        # move to next input/output point
+        ptr_y += stride_Y
+        ptr_x += stride_X

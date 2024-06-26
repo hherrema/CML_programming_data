@@ -1041,7 +1041,7 @@ def zfill(x, nx, xzfilled, nxzfilled):
     return 0
     
 # could be either DOUBLE_filt or FLOAT_filt
-def filter_func(b, a, x, y, z, len_b, len_x, stride_X, stride_Y):
+def filter_func(b, a, x, y, Z, len_b, len_x, stride_X, stride_Y):
     ptr_x = x
     ptr_y = y
     # ptr_Z
@@ -1064,7 +1064,7 @@ def filter_func(b, a, x, y, z, len_b, len_x, stride_X, stride_Y):
         yn = ptr_y
         if len_b > 1:
             ptr_Z = Z
-            yn = ptr_z + ptr_b * xn   # calculate first delay (output)
+            yn = ptr_Z + ptr_b * xn   # calculate first delay (output)
             ptr_b += 1
             ptr_a += 1
             

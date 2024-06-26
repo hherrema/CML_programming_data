@@ -8,3 +8,5 @@ Each folder will refer to a specific project or line of work:
 - system_version_finder = determine NaN system versions on data index
 - mturk_data = load and process lab's MTurk data
 - data_quality_database = report and query session level data quality issues
+- butterworth_notch_filter = c++ butterworth bandpass filter to match scipy implementation
+- correct_sources_json = diagnose and correct erroneous data in metadata files

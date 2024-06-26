@@ -1,0 +1,113 @@
+param,exception,traceback_obj
+FR491_EFRCourierOpenLoop_1,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/pyfr/subjects/FR491/experiments/EFRCourierOpenLoop/sessions/1/ephys/current_processed/sources.json\n/data/eeg/FR491/eeg.noreref/None.params.txt\n/data/eeg/FR491/eeg.noreref/params.txt'),<traceback object at 0x2b2f8362c280>
+FR491_EFRCourierOpenLoop_2,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/pyfr/subjects/FR491/experiments/EFRCourierOpenLoop/sessions/2/ephys/current_processed/sources.json\n/data/eeg/FR491/eeg.noreref/None.params.txt\n/data/eeg/FR491/eeg.noreref/params.txt'),<traceback object at 0x2b2f83622480>
+R1006P_YC2_2,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83877b00>
+R1013E_YC2_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f8374abc0>
+R1024E_YC2_2,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83636140>
+R1047D_YC1_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f838ceac0>
+R1051J_PS2_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83985840>
+R1052E_YC1_3,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83761940>
+R1052E_YC1_4,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83986bc0>
+R1059J_PS3_3,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f839997c0>
+R1069M_FR2_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f837e1bc0>
+R1093J_FR1_1,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f3b72a400>
+R1093J_FR1_2,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83a5db80>
+R1106M_YC1_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f83e215c0>
+R1121M_PAL1_1,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f81f94ec0>
+R1150J_PS2_1,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f3b795680>
+R1150J_PS2_2,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f3b76fe00>
+R1191J_FR1_0,KeyError('name'),<traceback object at 0x2b2f83ededc0>
+R1191J_FR1_1,KeyError('name'),<traceback object at 0x2b2f900814c0>
+R1191J_FR1_2,KeyError('name'),<traceback object at 0x2b2f900d77c0>
+R1191J_TH1_0,KeyError('name'),<traceback object at 0x2b2f900d64c0>
+R1207J_FR1_0,KeyError('name'),<traceback object at 0x2b2f3b78f980>
+R1207J_FR1_1,KeyError('name'),<traceback object at 0x2b2f9013a2c0>
+R1207J_PAL1_0,KeyError('name'),<traceback object at 0x2b2f900d6c40>
+R1207J_PAL1_1,KeyError('name'),<traceback object at 0x2b2f900fa100>
+R1207J_TH1_0,KeyError('name'),<traceback object at 0x2b2f82206200>
+R1207J_catFR1_0,KeyError('name'),<traceback object at 0x2b2f3b7766c0>
+R1207J_catFR1_1,KeyError('name'),<traceback object at 0x2b2f90050e40>
+R1207J_catFR1_2,KeyError('name'),<traceback object at 0x2b2f9002c200>
+R1207J_catFR1_3,KeyError('name'),<traceback object at 0x2b2f900d7880>
+R1216E_FR1_0,"ValueError(""split EEG filenames don't seem to match what are in the events"")",<traceback object at 0x2b2f9014a980>
+R1219C_TH1_1,IndexError('index 2 is out of bounds for axis 0 with size 2'),<traceback object at 0x2b2f82055b40>
+R1230J_FR1_0,KeyError('name'),<traceback object at 0x2b2f9000d900>
+R1230J_FR1_2,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90171d00>
+R1230J_FR1_4,KeyError('name'),<traceback object at 0x2b2f81e52c80>
+R1230J_FR1_5,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90000780>
+R1230J_FR1_6,KeyError('name'),<traceback object at 0x2b2f90149c40>
+R1230J_FR3_0,KeyError('name'),<traceback object at 0x2b2f9022f100>
+R1230J_FR3_1,KeyError('name'),<traceback object at 0x2b2f9005a300>
+R1230J_PAL1_0,"TypeError(""argument of type 'float' is not iterable"")",<traceback object at 0x2b2f82032880>
+R1230J_PAL1_1,KeyError('name'),<traceback object at 0x2b2f90139580>
+R1230J_PS2.1_0,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f81e40340>
+R1230J_PS2.1_1,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90249f00>
+R1230J_PS2.1_2,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f9015d0c0>
+R1230J_PS2.1_3,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f901ecd00>
+R1230J_PS2.1_4,KeyError('name'),<traceback object at 0x2b2f900f3600>
+R1230J_PS2.1_5,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f83119240>
+R1230J_PS2.1_6,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f900d6bc0>
+R1230J_PS2.1_7,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f9021d580>
+R1230J_PS2.1_8,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90119d80>
+R1230J_TH1_1,KeyError('name'),<traceback object at 0x2b2f9018df40>
+R1230J_catFR1_0,KeyError('name'),<traceback object at 0x2b2f900d6780>
+R1236J_FR1_0,KeyError('name'),<traceback object at 0x2b2f901d3c00>
+R1236J_FR1_1,KeyError('name'),<traceback object at 0x2b2f83edcc00>
+R1236J_FR1_2,KeyError('name'),<traceback object at 0x2b2f901fbf80>
+R1236J_FR1_3,KeyError('name'),<traceback object at 0x2b2f9020d5c0>
+R1236J_FR3_0,KeyError('name'),<traceback object at 0x2b2f901ed040>
+R1236J_PS2.1_0,KeyError('name'),<traceback object at 0x2b2f901a05c0>
+R1236J_PS2.1_1,KeyError('name'),<traceback object at 0x2b2f9034cd00>
+R1236J_PS2.1_2,KeyError('name'),<traceback object at 0x2b2f90015500>
+R1236J_PS2.1_3,KeyError('name'),<traceback object at 0x2b2f900f26c0>
+R1236J_TH1_0,KeyError('name'),<traceback object at 0x2b2f90352e00>
+R1236J_TH1_1,KeyError('name'),<traceback object at 0x2b2f9018d880>
+R1236J_TH1_2,KeyError('name'),<traceback object at 0x2b2f9010f500>
+R1236J_catFR1_0,KeyError('name'),<traceback object at 0x2b2f82011a00>
+R1236J_catFR1_2,KeyError('name'),<traceback object at 0x2b2f838cf9c0>
+R1236J_catFR1_3,KeyError('name'),<traceback object at 0x2b2f830da240>
+R1236J_catFR3_0,KeyError('name'),<traceback object at 0x2b2f901a4d00>
+R1241J_FR1_0,KeyError('name'),<traceback object at 0x2b2f8382b280>
+R1241J_TH1_1,"TypeError(""argument of type 'float' is not iterable"")",<traceback object at 0x2b2f90014200>
+R1241J_TH1_2,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f900b9a40>
+R1241J_TH1_3,KeyError('name'),<traceback object at 0x2b2f9018d080>
+R1241J_TH1_4,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f901a3e00>
+R1241J_TH1_5,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f901dd180>
+R1244J_TH1_0,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90235540>
+R1250N_PAL3_0,ValueError('Expected object or value'),<traceback object at 0x2b2f9022f1c0>
+R1263C_TH1_0,KeyError('name'),<traceback object at 0x2b2f9033c640>
+R1266J_catFR1_1,KeyError('name'),<traceback object at 0x2b2f9033e0c0>
+R1266J_catFR1_2,KeyError('name'),<traceback object at 0x2b2f9037b1c0>
+R1266J_catFR1_3,KeyError('name'),<traceback object at 0x2b2f9037a400>
+R1266J_catFR1_5,KeyError('name'),<traceback object at 0x2b2f901a34c0>
+R1267J_TH1_0,"TypeError(""argument of type 'float' is not iterable"")",<traceback object at 0x2b2f90322dc0>
+R1267J_TH1_2,"TypeError(""argument of type 'float' is not iterable"")",<traceback object at 0x2b2f81e6cd00>
+R1267J_TH1_4,KeyError('name'),<traceback object at 0x2b2f83839800>
+R1270J_TH1_0,KeyError('name'),<traceback object at 0x2b2f901ed500>
+R1277J_FR1_0,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f9045d700>
+R1277J_catFR1_0,KeyError('name'),<traceback object at 0x2b2f9022dd00>
+R1277J_catFR1_1,KeyError('name'),<traceback object at 0x2b2f9039f840>
+R1277J_catFR3_0,"TypeError(""argument of type 'float' is not iterable"")",<traceback object at 0x2b2f90352dc0>
+R1286J_PS2_1,ValueError('Expected object or value'),<traceback object at 0x2b2f90363640>
+R1286J_PS2_2,ValueError('Expected object or value'),<traceback object at 0x2b2f90378d40>
+R1286J_PS2_3,ValueError('Expected object or value'),<traceback object at 0x2b2f9038a640>
+R1299T_PS4_FR_0,ValueError('Expected object or value'),<traceback object at 0x2b2f9033df00>
+R1299T_PS4_FR_3,ValueError('Expected object or value'),<traceback object at 0x2b2f903dcdc0>
+R1300C_THR_1,MissingDataError('Unable to load EEG for some events because rel_start or rel_stop parameter is beyond the first or last sample of the EEG recording.  Try loading EEG again after dropping the first or last event(s).'),<traceback object at 0x2b2f90438800>
+R1300C_THR_2,KeyError('name'),<traceback object at 0x2b2f9038a400>
+R1300C_THR_3,KeyError('name'),<traceback object at 0x2b2f90350ec0>
+R1300C_THR_4,KeyError('name'),<traceback object at 0x2b2f903884c0>
+R1300C_THR_5,KeyError('name'),<traceback object at 0x2b2f81e72400>
+R1443D_LocationSearch_2,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f81f692c0>
+R1449T_LocationSearch_3,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f90593340>
+R1465D_LocationSearch_1,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f3b7db2c0>
+R1475J_PS4_catFR5_1,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/r1/subjects/R1475J/experiments/PS4_catFR/sessions/1/behavioral/current_processed/task_events.json\n/data/events/pyFR/R1475J_events.mat'),<traceback object at 0x2b2f81a94640>
+R1476J_PS4_catFR5_1,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/r1/subjects/R1476J/experiments/PS4_catFR/sessions/1/behavioral/current_processed/task_events.json\n/data/events/pyFR/R1476J_events.mat'),<traceback object at 0x2b2f904837c0>
+R1476J_PS4_catFR5_2,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/r1/subjects/R1476J/experiments/PS4_catFR/sessions/2/behavioral/current_processed/task_events.json\n/data/events/pyFR/R1476J_events.mat'),<traceback object at 0x2b2f9060cc40>
+R1476J_PS4_catFR5_4,FileNotFoundError('Unable to find the requested file in any of the expected locations:\n /protocols/r1/subjects/R1476J/experiments/PS4_catFR/sessions/4/behavioral/current_processed/task_events.json\n/data/events/pyFR/R1476J_events.mat'),<traceback object at 0x2b2f906253c0>
+R1608S_LocationSearch_1,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f9093cd40>
+R1625T_RepFR1_1,IndexError('single positional indexer is out-of-bounds'),<traceback object at 0x2b2f81e77d40>
+R1625T_RepFR1_3,IndexError('single positional indexer is out-of-bounds'),<traceback object at 0x2b2f908f0dc0>
+R1626S_LocationSearch_22,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f9093c140>
+R1655S_LocationSearch_16,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f9091d7c0>
+R1692T_ICatFR1_0,"ValueError('Events DataFrame is empty. Events JSON or MATLAB                 file likely empty, and experiment session likely not run or uploaded properly.')",<traceback object at 0x2b2f83992b00>

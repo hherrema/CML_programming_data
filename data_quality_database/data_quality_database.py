@@ -4,13 +4,24 @@
 import cmlreaders as cml
 import pandas as pd
 import warnings
+import json
 
 class data_quality_database:
     # database fields
-    FIELDS = ['subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 
-              'localization', 'montage', 'on_cmlreaders', 'category', 'notes']
-    TYPES = [str, str, str, str, int, int, int, int, bool, str, str]
+    FIELDS = ['protocol', 'subject', 'subject_alias', 'experiment', 'original_experiment', 'session', 'original_session', 'localization', 'montage', 
+              'system_version', 'events', 'contacts', 'pairs', 'monopolar', 'bipolar', 'step', 'category', 'notes']
+    TYPES = [str, str, str, str, str, int, (int, float), int, int, (int, float), bool, bool, bool, bool, bool, str, str, str]
 
+    # data issue steps
+    STEPS = {
+        'collection': 'Error during data collection at hospital or in scalp lab.',
+        'processing_imaging': 'Error during image processing (localization pipeline).',
+        'processing_behavior': 'Error during event processing (event creation).',
+        'processing_eeg': 'Error durring eeg processing (event creation).',
+        'analysis': 'Error during data loading/analyses (cmlreaders).'
+    }
+
+    """
     # data issue categories
     CATEGORIES = {
         'sync_pulse_alignment': 'Questionable alignment via sync pulses.',
@@ -19,17 +30,38 @@ class data_quality_database:
         'multiple_eegfiles': 'Recommend sorting multiple EEG files.',
         'other': 'Any other uncategorized issue.'
     }
+    """
 
     # initialize
-    def __init__(self, path='output_dir/data_quality_records.csv'):
-        self.path = path
+    def __init__(self, categories_path = 'output_dir/data_quality_categories.json', db_path='output_dir/data_quality_records.csv'):
+        self.categories_path = categories_path
+        self.db_path = db_path
+
+        # data issue categories
+        with open(self.categories_path, 'r') as f:
+            self.CATEGORIES = json.load(f)
 
     
+    # ---------- Utility ----------
+    
+    # return possible steps
+    def possible_steps(self):
+        return self.STEPS
+    
+    # return possible categories
+    def possible_categories(self):
+        return self.CATEGORIES
+    
+    # return dictionary structure for reporting issue
+    def report_structure(self):
+        return dict(zip(self.FIELDS, self.TYPES))
+
+
     # ---------- Query ----------
     
     # return dataframe with all known issues
     def all_records(self):
-        return pd.read_csv(self.path)
+        return pd.read_csv(self.db_path)
     
     # query single session
     def query_session(self, subject, experiment, session, exc=True):
@@ -44,133 +76,154 @@ class data_quality_database:
         return sess_records
 
     # query single subject
-    def query_subject(self, subject):
+    def query_subject(self, subject, exc=True):
         records = self.all_records()
         sub_records = records[records.subject == subject]
 
-        if len(sub_records) == 0:
+        if len(sub_records) == 0 and exc:
             raise LookupError(f'{subject} not in records.')
         
         return sub_records
     
     # ---------- Report ----------
+
+    # validate step
+    def _validate_step(self, step):
+        if step not in self.STEPS.keys():
+            raise ValueError(f"step must be one of {list(self.STEPS.keys())}")
     
-    # return possible categories
-    def possible_categories(self):
-        return self.CATEGORIES
+    # validate category
+    def _validate_category(self, category):
+        if category not in self.CATEGORIES.keys():
+            raise ValueError(f"category must be one of {list(self.CATEGORIES.keys())}. "
+                             "Add a new category using the new_category method.")
+        
+    # add new category
+    def new_category(self, category, description):
+        if category in self.CATEGORIES.keys():
+            raise ValueError(f"{category} already exists in possible categories")
+        else:
+            warnings.warn(f"Creating new data issue category {category}")
+            self.CATEGORIES[category] = description
+            with open(self.CATEGORIES, 'w') as f:
+                json.dump(self.CATEGORIES, self.categories_path, indent=2)
     
-    # return dictionary structure for reporting issue
-    def report_structure(self):
-        return dict(zip(self.FIELDS, self.TYPES))
+    # report each field individually, check for type
+    def _add_field_to_report(self, rs, k, typ, v):
+        if type(v) == typ or type(v) in typ:
+            rs[k] = v
+        else:
+            raise TypeError(f"{k} must have type {typ}")
+        
+        return rs
     
     # build report in correct structure
-    def build_report(self, subject, subject_alias, experiment, orignal_experiment, session,
-                     original_session, localization, montage, on_cmlreaders, category, notes):
-        rs = self.report_structure()
+    def build_report(self, protocol, subject, subject_alias, experiment, original_experiment, session, original_session, localization, montage,
+                     system_version, events, contacts, pairs, monopolar, bipolar, step, category, notes):
+        
+        # validate arguments
+        self._validate_step(step)
+        self._validate_category(category)
+        
+        report_list = list(zip(self.FIELDS, self.TYPES, [protocol, subject, subject_alias, experiment, original_experiment, session, original_session, localization, montage,
+                                                         system_version, events, contacts, pairs, monopolar, bipolar, step, category, notes]))
+        
+        report_dict = {}
+        for (k, t, v) in report_list:
+            report_dict = self._add_field_to_report(report_dict, k, t, v)
 
-        # subject
-        if type(subject) == str:
-            rs['subject'] = subject
-        else:
-            raise TypeError("'subject' must have type str")
-        
-        # subject_alias
-        if type(subject_alias) == str:
-            rs['subject_alias'] = subject_alias
-        else:
-            raise TypeError("'subject_alias' must have type str")
-        
-        # experiment
-        if type(experiment) == str:
-            rs['experiment'] = experiment
-        else:
-            raise TypeError("'experiment' must have type str")
-        
-        # original experiment
-
-        # session
-        if type(session) == int:
-            rs['session'] = session
-        else:
-            raise TypeError("'session' must have type int")
-        
-        # original session
-
-        # localization
-        
-    # type checks
-    def _type_check_report_build(self, rs, key, val, typ):
-        if type(val) == typ:
-            rs[key] = val
-            return rs
-        else:
-            raise TypeError(f"{key} must have type {typ}")
+        return report_dict
     
     # report issue
-    def report(self, kwargs, force=False):
-        valid_kwargs = self._validate_kwargs(kwargs)
+    def report(self, report_dict, force=False):
+        sess_records = self.query_session(report_dict['subject'], report_dict['experiment'], report_dict['session'], exc=False)
 
-        sess_records = self.query_session(valid_kwargs['subject'],
-                                          valid_kwargs['experiment'],
-                                          valid_kwargs['session'],
-                                          exc=False)
         # new submission
         if len(sess_records) == 0:
-            warnings.warn(f"Reporting problem for {valid_kwargs['subject']}, "
-                          f"{valid_kwargs['experiment']}, {valid_kwargs['session']}")
-            row = self._update_database(valid_kwargs)
+            warnings.warn(f"Reporting issue for {report_dict['subject']}, "
+                          f"{report_dict['experiment']}, {report_dict['session']}")
+            row = self._update_database(report_dict)
             return row
         
         # repeat submission
         else:
             if not force:
-                warnings.warn(f"{valid_kwargs['subject']}, {valid_kwargs['experiment']}, "
-                              f"{valid_kwargs['session']} already has {len(sess_records)} "
+                warnings.warn(f"{report_dict['subject']}, {report_dict['experiment']}, "
+                              f"{report_dict['session']} already has {len(sess_records)} "
                               "reported issues.  If you are reporting a new issue, re-submit "
                               "your report with the argument: force=True")
                 return sess_records
             else:
-                warnings.warn(f"Reporting problem for {valid_kwargs['subject']}, "
-                              f"{valid_kwargs['experiment']}, {valid_kwargs['session']}")
-                row = self._update_database(valid_kwargs)
-                return row
+                warnings.warn(f"Reporting issue for {report_dict['subject']}, "
+                          f"{report_dict['experiment']}, {report_dict['session']}")
+            row = self._update_database(report_dict)
+            return row
 
-    # validate structure of keyword arguments
-    def _validate_kwargs(self, kwargs):
-        # remove keys that are not valid fields
-        cleaned_kwargs = {k: v for k, v in kwargs.items() if k in self.FIELDS}
-        removed_keys = list(set(kwargs.keys()) - set(cleaned_kwargs.keys()))
-        if len(removed_keys) > 0:
-            warnings.warn(f'Removing invalid arguments: {removed_keys}')
-
-        # required fields not in keys
-        missing_keys = [x for x in self.FIELDS if x not in cleaned_kwargs.keys()]
-        if len(missing_keys) > 0:
-            raise ValueError(f'Required fields not in input: {missing_keys}')
-        
-         # values with wrong types
-        correct_structure = self.report_structure()
-        wrong_types = [(k, type(v), correct_structure[k]) for k, v in cleaned_kwargs.items() 
-                       if type(v) != correct_structure[k]]
-        if len(wrong_types) > 0:
-            raise TypeError(f'Following fields have wrong types (field, input type, expected type): {wrong_types}')
-        
-        # category in excepted categories
-        if cleaned_kwargs['category'] not in self.CATEGORIES:
-            raise ValueError(f"'category' field must be one of {list(self.CATEGORIES.keys())}")
-        
-        return cleaned_kwargs
 
     # update database
-    def _update_database(self, valid_kwargs):
+    def _update_database(self, report_dict):
         records = self.all_records()
-        row = pd.DataFrame(valid_kwargs, index=[len(records)])
-        records = pd.concat([records, row])
+        row = pd.DataFrame(report_dict, index=[len(records)])
+        records = pd.concat([records, row], ignore_index=True)
 
         # sort by subject, experiment, session
         records = records.sort_values(by=['subject', 'experiment', 'session'])
 
         # save out
-        records.to_csv(self.path, index=False)
+        records.to_csv(self.db_path, index=False)
 
         return row
+    
+    
+    # ---------- Remove ----------
+    
+    # remove data issue entry
+    def remove_report(self, subject, experiment, session, step, category):
+        raise NotImplementedError
+    
+    
+    # ---------- Loading ----------
+    
+    # create CMLReader object
+    def cml_reader(self, subject, experiment, session, localization, montage):
+        return cml.CMLReader(subject, experiment, session, localization, montage)
+        
+    # load events
+    def load_events(self, reader):
+        try:
+            evs = reader.load('events')
+            return True, evs
+        except BaseException:
+            return False, None
+        
+    # load contacts
+    def load_contacts(self, reader):
+        try:
+            contacts = reader.load('contacts')
+            return True, contacts
+        except BaseException:
+            return False, None
+        
+    # load pairs
+    def load_pairs(self, reader):
+        try:
+            pairs = reader.load('pairs')
+            return True, pairs
+        except BaseException:
+            return False, None
+        
+    # load monopolar EEG
+    def load_monopolar(self, reader, contacts):
+        try:
+            eeg_m = reader.load_eeg(scheme=contacts)
+            return True, eeg_m
+        except BaseException:
+            return False, None
+        
+    # load bipolar EEG
+    def load_bipolar(self, reader, pairs):
+        try:
+            eeg_b = reader.load_eeg(scheme=pairs)
+            return True, eeg_b
+        except BaseException:
+            return False, None

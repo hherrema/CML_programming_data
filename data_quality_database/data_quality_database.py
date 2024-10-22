@@ -17,7 +17,7 @@ class data_quality_database:
         'collection': 'Error during data collection at hospital or in scalp lab.',
         'processing_imaging': 'Error during image processing (localization pipeline).',
         'processing_behavior': 'Error during event processing (event creation).',
-        'processing_eeg': 'Error durring eeg processing (event creation).',
+        'processing_eeg': 'Error during eeg processing (event creation).',
         'analysis': 'Error during data loading/analyses (cmlreaders).'
     }
 
@@ -187,6 +187,12 @@ class data_quality_database:
     # create CMLReader object
     def cml_reader(self, subject, experiment, session, localization, montage):
         return cml.CMLReader(subject, experiment, session, localization, montage)
+    
+    # get data index for session (to extract other metadata)
+    def data_index(self, subject, experiment, session):
+        df = cml.get_data_index()
+        df_sel = df[(df.subject == subject) & (df.experiment == experiment) & (df.session == session)]
+        return df_sel
         
     # load events
     def load_events(self, reader):
